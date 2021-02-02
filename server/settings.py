@@ -1,0 +1,5 @@
+HOST='0.0.0.0'
+PORT=1234
+DEBUG=True
+CSV_DIR='csv'
+DTFORMAT='%m%d%y'
