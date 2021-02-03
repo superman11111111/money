@@ -50,6 +50,19 @@ def threads():
     import html
     return html.escape(str(THREADS))
 
+@app.route('/info')
+def info():
+    global THREADS
+    import html
+    th = html.escape(str(THREADS))
+    th += '<br>'
+    dirs = os.listdir(CSV_DIR))
+    for d in dirs:
+        th += d
+        th += html.escape(str(os.listdir(os.path.join(CSV_DIR, d))))
+        th += '<br>'
+    return th
+
 
 if __name__ == '__main__':
     app.run(host=HOST, port=PORT, debug=DEBUG)
