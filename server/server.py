@@ -56,7 +56,7 @@ def info():
     import html
     th = html.escape(str(THREADS))
     th += '<br>'
-    dirs = os.listdir(CSV_DIR))
+    dirs = os.listdir(CSV_DIR)
     for d in dirs:
         th += d
         th += html.escape(str(os.listdir(os.path.join(CSV_DIR, d))))
