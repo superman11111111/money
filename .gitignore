@@ -1,6 +1,7 @@
 server/env/
 server/__pycache__/ 
 server/csv/
+server/start.sh
 *.swp
 *.zip
 
