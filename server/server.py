@@ -4,6 +4,7 @@ import etf
 import json
 import os
 from flask import Flask
+import threading
 
 THREADS = []
 etfs = [etf.from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
@@ -25,6 +26,7 @@ def dl():
 def calc():
     for etf in etfs:
         etf.calc()
+        return index()
     return index()
 
 import time
@@ -36,8 +38,7 @@ def _observe():
 
 @app.route('/ob')
 def observe():
-    from threading import Thread
-    t = Thread(target=_observe)
+    t = threading.Thread(target=_observe)
     global THREADS
     THREADS.append(t)
     print(THREADS)
@@ -54,12 +55,15 @@ def threads():
 def info():
     global THREADS
     import html
-    th = html.escape(str(THREADS))
+    th = html.escape(str(threading.enumerate()))
     th += '<br>'
-    dirs = os.listdir(CSV_DIR))
+    th += '<br>'
+    dirs = os.listdir(CSV_DIR)
     for d in dirs:
         th += d
-        th += html.escape(str(os.listdir(os.path.join(CSV_DIR, d))))
+        th += '<br>'
+        th += html.escape(' '.join(sorted(os.listdir(os.path.join(CSV_DIR, d)))))
+        th += '<br>'
         th += '<br>'
     return th
 

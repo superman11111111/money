@@ -18,6 +18,21 @@ csv/
 
 Math ;-;
 
+ARKK = {'$NICE': <df>, ...}
+
+$NICE
+date sh  mv
+9/11 100 $1M 
+9/12 120 $2M
+...
+
+<df> = {'date': [], 'sh': [], ...}
+
+some stocks only appear once, will maybe fill as time goes on
+
+sort dates 
+
+
 ### S3: Serve as JSON Api 
 
 
