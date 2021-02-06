@@ -3,14 +3,20 @@ from settings import *
 import etf 
 import json
 import os
-from flask import Flask
+from flask import Flask, jsonify
 import threading
-
-THREADS = []
-etfs = [etf.from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
-print(etfs)
+import time
+from datetime import datetime as dt
 
 app = Flask(__name__)
+
+try:
+    saves = os.listdir(TMP_DIR)
+    etfs = [etf.from_save(json.loads(open(os.path.join(TMP_DIR, x), 'r').read())) for x in saves]
+except FileNotFoundError:
+    etfs = [etf.from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
+    
+print(etfs)
 
 @app.route('/')
 def index():
@@ -24,38 +30,58 @@ def dl():
 
 @app.route('/calc')
 def calc():
-    for etf in etfs:
-        etf.calc()
-        return index()
+    t = threading.Thread(target=_calc)
+    t.start()
     return index()
 
-import time
+@app.route('/alerts')
+def alerts():
+    r = {}
+    for etf in etfs:
+        a = []
+        alerts = etf.get_alerts(1)
+        for tk, alert in alerts:
+            if (dt.now() - dt.strptime(alert['date'][0], DTFORMAT)).days < 2:
+                a.append({'tk': tk, 'date': alert['date'][0], 'diff2mv': alert['diff2mv'][0]})
+        a = sorted(a, key=lambda k: k['diff2mv']) 
+        r[etf.name] = a
+    return jsonify(r)
+
+def _calc():
+    for etf in etfs:
+        etf.calc()
+    return 1
+
 def _observe():
     while 1:
         for etf in etfs:
-            etf.download()
-        time.sleep(60*60*6)
+            etf.download(1)
+        time.sleep(QUERY_INTERVAL)
+
+@app.route('/save')
+def save():
+    for etf in etfs: 
+        print(etf.latest())
+        etf.save()
+    return index()
+
+@app.route('/load')
+def load():
+    for f in os.listdir(TMP_DIR):
+        e = etf.from_save(json.loads(open(os.path.join(TMP_DIR, f), 'r').read()))
+        print(e.dfs)
+    return index()
 
 @app.route('/ob')
 def observe():
     t = threading.Thread(target=_observe)
-    global THREADS
-    THREADS.append(t)
-    print(THREADS)
     t.start()
     return index()
 
-@app.route('/threads')
-def threads():
-    global THREADS
-    import html
-    return html.escape(str(THREADS))
-
 @app.route('/info')
 def info():
-    global THREADS
     import html
-    th = html.escape(str(threading.enumerate()))
+    th = '<br>'.join([html.escape(str(x)) for x in threading.enumerate()])
     th += '<br>'
     th += '<br>'
     dirs = os.listdir(CSV_DIR)

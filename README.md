@@ -32,8 +32,21 @@ some stocks only appear once, will maybe fill as time goes on
 
 sort dates 
 
+diff2mv = diff / mv
+
+
+### S2.5: Query portfolios recurringly and put changes into system
+
+Need some kind of state management, so I dont recalculate everything everytime a new entry follows
+
+Skipping for now...
+
 
 ### S3: Serve as JSON Api 
+
+Endpoints: 
+
+/alerts : Get alerts of last day
 
 
 
