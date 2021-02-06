@@ -10,11 +10,20 @@ from datetime import datetime as dt
 
 app = Flask(__name__)
 
+etfs = [etf.from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
 try:
     saves = os.listdir(TMP_DIR)
-    etfs = [etf.from_save(json.loads(open(os.path.join(TMP_DIR, x), 'r').read())) for x in saves]
+    for save in saves:
+        tmpjj = json.loads(open(os.path.join(TMP_DIR, save), 'r').read())
+        if tmpjj:
+            etfs
+    for i in : 
+        if jj:
+            etfs.append(etf.from_save(jj))
+        else:
+            etfs.append(etf.from_json(json.loads(open('etfs.json', 'r').read())))
 except FileNotFoundError:
-    etfs = [etf.from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
+    pass
     
 print(etfs)
 
