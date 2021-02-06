@@ -4,6 +4,11 @@
 
 Get ARK ETF Portfolio, record changes, serve their biggest investments as API, acccess per App => Buy in broker (TradeRepublic)
 
+##TODO
+
+* Fix loading in .json files when some etf have data and other dont (in server.py)
+
+
 ### Step 1 (S1): Get Portfolio
 
 Server Side: 
@@ -40,6 +45,7 @@ diff2mv = diff / mv
 Need some kind of state management, so I dont recalculate everything everytime a new entry follows
 
 Skipping for now...
+
 
 
 ### S3: Serve as JSON Api 
