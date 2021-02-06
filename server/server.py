@@ -36,7 +36,7 @@ def calc():
 
 @app.route('/alerts')
 def alerts():
-    r = {}
+    r = []
     for etf in etfs:
         a = []
         alerts = etf.get_alerts(1)
@@ -44,7 +44,7 @@ def alerts():
             if (dt.now() - dt.strptime(alert['date'][0], DTFORMAT)).days < 2:
                 a.append({'tk': tk, 'date': alert['date'][0], 'diff2mv': alert['diff2mv'][0]})
         a = sorted(a, key=lambda k: k['diff2mv']) 
-        r[etf.name] = a
+        r.append({'name': etf.name, 'alerts': a})
     return jsonify(r)
 
 def _calc():
