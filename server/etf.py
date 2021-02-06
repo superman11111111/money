@@ -84,15 +84,20 @@ class ETF():
                 if tk not in self.dfs:
                     self.dfs[tk] = copy.deepcopy(default)
                 for c in default.keys():
-                    self.dfs[tk][c][len(self.dfs[tk][c])] = tmp[c].iloc[j]
+                    self.dfs[tk][c].append(tmp[c].iloc[j])
 
     def save(self):
         mkdir(TMP_DIR)
         open(join(TMP_DIR, self.name+'.json'), 'w').write(self.to_json())
 
     def calc(self):
+        print(self)
+        return
         self.csv_to_dfs()
         for tk in self.dfs:
+            print(self.dfs[tk])
+            for col in self.dfs[tk]:
+                print(tk, col, len(self.dfs[tk][col]))
             df = pd.DataFrame(self.dfs[tk])
             df['date'] = pd.to_datetime(df['date'])
             df.index = df['date']
@@ -101,7 +106,7 @@ class ETF():
             df['diff2mv'] = df['diff'].astype('float')/df['market value($)'].astype('float')
             df['date'] = df['date'].dt.strftime(DTFORMAT)
             df.index = list(range(len(df)))
-            self.dfs[tk] = df.to_dict()
+            self.dfs[tk] = df.to_dict(orient='list')
         self.save()
         print(f'{self.name} saved!')
     
