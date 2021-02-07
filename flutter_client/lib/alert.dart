@@ -1,6 +1,6 @@
 class Alert {
   final String date;
-  final int diff2mv;
+  final double diff2mv;
   final String tk;
 
   Alert({this.date, this.diff2mv, this.tk});
@@ -21,6 +21,10 @@ class ETFAlerts {
   ETFAlerts({this.name, this.alerts});
 
   factory ETFAlerts.fromJson(Map<String, dynamic> json) {
-    return ETFAlerts(alerts: json['alerts'], name: json['name']);
+    List<Alert> alerts = new List();
+    for (var jj in json['alerts']) {
+      alerts.add(Alert.fromJson(jj));
+    }
+    return ETFAlerts(alerts: alerts, name: json['name']);
   }
 }
