@@ -10,12 +10,14 @@ import pandas as pd
 import math
 
 
-class ETF():
-    def __init__(self, name, link, dfs={}):
+class MyETF:
+    def __init__(self, name, link, dfs=None):
         self.name = name
         self.link = link
-        self.dfs = dfs
-        self.mkdir()
+        if dfs is None:
+            self.dfs = {}
+        else:
+            self.dfs = dfs
 
     def to_json(self):
         r = self.__dict__ 
@@ -47,7 +49,6 @@ class ETF():
         elif diff > 0:
             self.mkdir()
             open(join(self.dir, self.fromDtf(date)+'.csv'), 'wb').write(ct)
-            self.csv_to_dfs()
             self.calc()
         else:
             print('something went wrong')
@@ -63,41 +64,36 @@ class ETF():
         l.sort()
         return l
 
-    def csv_to_dfs(self, n=0):
+    def csv_to_dfs(self):
         '''
         n: convert last n dates (n=0 means all)
         '''
         import copy
         default = {'date': [], 'shares': [], 'market value($)': [], 'weight(%)': []}
+        keys = list(default.keys())
         dates = listdir(self.dir)
         for i in range(len(dates)):
             date = dates[i]
             f = join(self.dir, date)
             tmp = pd.read_csv(f, delimiter=',')
-            k = 0
             for j in range(len(tmp['ticker'])):
                 tmptk = tmp['ticker'].iloc[j]
                 if pd.isnull(tmptk):
                     continue
                 tk = tmptk[:] 
-                k+=1
-                if tk not in self.dfs:
-                    self.dfs[tk] = copy.deepcopy(default)
-                for c in default.keys():
-                    self.dfs[tk][c].append(tmp[c].iloc[j])
+                if tk not in self.dfs.keys():
+                    self.dfs[tk] = copy.deepcopy(default) 
+                for k in keys: 
+                    self.dfs[tk][k].append(tmp[k].iloc[j])
 
     def save(self):
         mkdir(TMP_DIR)
         open(join(TMP_DIR, self.name+'.json'), 'w').write(self.to_json())
+        print(f'{self.name} saved!')
 
     def calc(self):
-        print(self)
-        return
         self.csv_to_dfs()
-        for tk in self.dfs:
-            print(self.dfs[tk])
-            for col in self.dfs[tk]:
-                print(tk, col, len(self.dfs[tk][col]))
+        for tk in self.dfs.keys():
             df = pd.DataFrame(self.dfs[tk])
             df['date'] = pd.to_datetime(df['date'])
             df.index = df['date']
@@ -108,7 +104,6 @@ class ETF():
             df.index = list(range(len(df)))
             self.dfs[tk] = df.to_dict(orient='list')
         self.save()
-        print(f'{self.name} saved!')
     
     def get_alerts(self, n=5):
         alerts = []
@@ -125,8 +120,8 @@ class ETF():
         return alerts 
 
 def from_json(json):
-    return ETF(json['name'], json['link'])
+    return MyETF(json['name'], json['link'])
 
 def from_save(json):
-    return ETF(json['name'], json['link'], json['dfs'])
+    return MyETF(json['name'], json['link'], json['dfs'])
 

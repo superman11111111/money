@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from datetime import datetime as dt
 from settings import *
+import etf
 
 def mkdir(path):
     try:
@@ -22,6 +23,14 @@ def check_labeling():
     if e == 0:
         print('No errors!')
 
+def testing():
+    etfs = []
+    for i in range(5):
+        etfs.append(etf.MyETF(f'{i}-etf', 'link', {}))
+    etfs[0].dfs['TSLA'] = {}
+    print(etfs)
+
+
 if __name__ == '__main__':
-    check_labeling()
+    testing()
 

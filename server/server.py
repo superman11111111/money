@@ -1,31 +1,29 @@
 import requests
 from settings import *
-import etf 
+from etf import *
 import json
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import threading
 import time
 from datetime import datetime as dt
 
 app = Flask(__name__)
 
-etfs = [etf.from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
+etfs = [from_json(x) for x in json.loads(open('etfs.json', 'r').read())]
 try:
     saves = os.listdir(TMP_DIR)
     for save in saves:
         tmpjj = json.loads(open(os.path.join(TMP_DIR, save), 'r').read())
         if tmpjj:
-            etfs
-    for i in : 
-        if jj:
-            etfs.append(etf.from_save(jj))
-        else:
-            etfs.append(etf.from_json(json.loads(open('etfs.json', 'r').read())))
+            etfsave = from_save(tmpjj)
+            for i in range(len(etfs)):
+                eetf = etfs[i]
+                if eetf.name == etfsave.name:
+                    etfs[i] = etfsave
 except FileNotFoundError:
     pass
     
-print(etfs)
 
 @app.route('/')
 def index():
@@ -38,19 +36,24 @@ def dl():
     return index()
 
 @app.route('/calc')
-def calc():
+def ccalc():
     t = threading.Thread(target=_calc)
     t.start()
     return index()
 
 @app.route('/alerts')
 def alerts():
+    d = request.args.get('d')
+    if not d:
+        d = 2
+    else:
+        d = int(d)
     r = []
     for etf in etfs:
         a = []
         alerts = etf.get_alerts(1)
         for tk, alert in alerts:
-            if (dt.now() - dt.strptime(alert['date'][0], DTFORMAT)).days < 2:
+            if (dt.now() - dt.strptime(alert['date'][0], DTFORMAT)).days < d:
                 a.append({'tk': tk, 'date': alert['date'][0], 'diff2mv': alert['diff2mv'][0]})
         a = sorted(a, key=lambda k: k['diff2mv']) 
         r.append({'name': etf.name, 'alerts': a})
@@ -77,7 +80,7 @@ def save():
 @app.route('/load')
 def load():
     for f in os.listdir(TMP_DIR):
-        e = etf.from_save(json.loads(open(os.path.join(TMP_DIR, f), 'r').read()))
+        e = from_save(json.loads(open(os.path.join(TMP_DIR, f), 'r').read()))
         print(e.dfs)
     return index()
 
@@ -104,5 +107,10 @@ def info():
 
 
 if __name__ == '__main__':
+    for etf in etfs:
+        etf.mkdir()
+    print(etfs)
     app.run(host=HOST, port=PORT, debug=DEBUG)
+
+
 

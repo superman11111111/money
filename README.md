@@ -8,6 +8,8 @@ Get ARK ETF Portfolio, record changes, serve their biggest investments as API, a
 
 * Fix loading in .json files when some etf have data and other dont (in server.py)
 
+* This cost me a whole day: https://stackoverflow.com/questions/1132941/least-astonishment-and-the-mutable-default-argument
+
 
 ### Step 1 (S1): Get Portfolio
 
