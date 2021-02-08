@@ -68,48 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // initNotf();
     futureAlerts = fetchAlerts();
-  }
-
-  void initNotf() async {
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    final IOSInitializationSettings initializationSettingsIOS =
-        IOSInitializationSettings(
-            onDidReceiveLocalNotification: onDidReceiveLocalNotification);
-    final MacOSInitializationSettings initializationSettingsMacOS =
-        MacOSInitializationSettings();
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
-            android: initializationSettingsAndroid,
-            iOS: initializationSettingsIOS,
-            macOS: initializationSettingsMacOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: selectNotification);
-  }
-
-  void newNotf(String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails('1', 'Test123', 'Test123',
-            importance: Importance.max,
-            priority: Priority.high,
-            showWhen: false);
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin
-        .show(0, title, body, platformChannelSpecifics, payload: 'item x');
-  }
-
-  Future selectNotification(String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: $payload');
-    }
-    await Navigator.push(
-      context,
-      MaterialPageRoute<void>(builder: (context) => SecondScreen()),
-    );
   }
 
   @override
@@ -117,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        leading: Icon(Icons.settings),
       ),
       body: Center(
           child: FutureBuilder<List<ETFAlerts>>(
@@ -127,17 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, i) {
                 return ListTile(
-                  leading: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () {},
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 48,
-                      height: 48,
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Text(snapshot.data[i].alerts.length.toString()),
-                    ),
-                  ),
+                  leading: Text(snapshot.data[i].alerts.length.toString()),
                   title: Text(snapshot.data[i].name),
                   onTap: () {
                     Navigator.push(
@@ -210,6 +160,3 @@ class AlertsScreen extends StatelessWidget {
     );
   }
 }
-
-Future onDidReceiveLocalNotification(
-    int id, String title, String body, String payload) {}
