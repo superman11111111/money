@@ -1,7 +1,7 @@
 HOST='0.0.0.0'
 PORT=4000
-DEBUG=True
+DEBUG=False
 CSV_DIR='csv'
 TMP_DIR='tmp'
 DTFORMAT='%m%d%y'
-QUERY_INTERVAL=60*30 # in seconds
+QUERY_INTERVAL=60*60 # in seconds

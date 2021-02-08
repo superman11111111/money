@@ -36,6 +36,9 @@ class MyETF:
     def toDtf(self, dstring):
         return dt.strptime(dstring, DTFORMAT)
 
+    def print(self, msg):
+        print(f'{self.name} {msg}')
+
     def download(self, force=False):
         ct = rq.get(self.link).content
         # Get date from csv
@@ -45,13 +48,13 @@ class MyETF:
         if force:
             diff = 1
         if diff == 0:
-            print('no new data')
+            self.print('no new data')
         elif diff > 0:
             self.mkdir()
             open(join(self.dir, self.fromDtf(date)+'.csv'), 'wb').write(ct)
             self.calc()
         else:
-            print('something went wrong')
+            self.print('something went wrong')
             return 0
         return 1
 
@@ -69,6 +72,7 @@ class MyETF:
         n: convert last n dates (n=0 means all)
         '''
         import copy
+        import numpy as np
         default = {'date': [], 'shares': [], 'market value($)': [], 'weight(%)': []}
         keys = list(default.keys())
         dates = listdir(self.dir)
@@ -83,18 +87,27 @@ class MyETF:
                 tk = tmptk[:] 
                 if tk not in self.dfs.keys():
                     self.dfs[tk] = copy.deepcopy(default) 
-                for k in keys: 
-                    self.dfs[tk][k].append(tmp[k].iloc[j])
+                if date.split('.csv')[0] in self.dfs[tk]['date']:
+                    continue
+                for k in self.dfs[tk]: 
+                    try: 
+                        v = tmp[k].iloc[j]
+                    except KeyError:
+                        v = np.nan
+                    self.dfs[tk][k].append(v)
 
     def save(self):
         mkdir(TMP_DIR)
         open(join(TMP_DIR, self.name+'.json'), 'w').write(self.to_json())
-        print(f'{self.name} saved!')
+        self.print('saved!')
 
     def calc(self):
         self.csv_to_dfs()
         for tk in self.dfs.keys():
-            df = pd.DataFrame(self.dfs[tk])
+            try:
+                df = pd.DataFrame(self.dfs[tk])
+            except ValueError:
+                return
             df['date'] = pd.to_datetime(df['date'])
             df.index = df['date']
             df.sort_index(inplace=True)
@@ -103,6 +116,7 @@ class MyETF:
             df['date'] = df['date'].dt.strftime(DTFORMAT)
             df.index = list(range(len(df)))
             self.dfs[tk] = df.to_dict(orient='list')
+        self.print('calculated')
         self.save()
     
     def get_alerts(self, n=5):

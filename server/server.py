@@ -23,7 +23,6 @@ try:
                     etfs[i] = etfsave
 except FileNotFoundError:
     pass
-    
 
 @app.route('/')
 def index():
@@ -33,12 +32,6 @@ def index():
 def dl():
     for etf in etfs:
         etf.download()
-    return index()
-
-@app.route('/calc')
-def ccalc():
-    t = threading.Thread(target=_calc)
-    t.start()
     return index()
 
 @app.route('/alerts')
@@ -59,36 +52,13 @@ def alerts():
         r.append({'name': etf.name, 'alerts': a})
     return jsonify(r)
 
-def _calc():
-    for etf in etfs:
-        etf.calc()
-    return 1
-
 def _observe():
+    time.sleep(5)
     while 1:
+        print(f'[{dt.now()}]')
         for etf in etfs:
-            etf.download(1)
+            etf.download()
         time.sleep(QUERY_INTERVAL)
-
-@app.route('/save')
-def save():
-    for etf in etfs: 
-        print(etf.latest())
-        etf.save()
-    return index()
-
-@app.route('/load')
-def load():
-    for f in os.listdir(TMP_DIR):
-        e = from_save(json.loads(open(os.path.join(TMP_DIR, f), 'r').read()))
-        print(e.dfs)
-    return index()
-
-@app.route('/ob')
-def observe():
-    t = threading.Thread(target=_observe)
-    t.start()
-    return index()
 
 @app.route('/info')
 def info():
@@ -110,7 +80,10 @@ if __name__ == '__main__':
     for etf in etfs:
         etf.mkdir()
     print(etfs)
-    app.run(host=HOST, port=PORT, debug=DEBUG)
+    t = threading.Thread(target=_observe)
+    t.start()
+    from waitress import serve
+    serve(app, listen=f'{HOST}:{PORT}')
 
 
 
