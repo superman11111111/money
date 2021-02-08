@@ -10,18 +10,13 @@ void main() {
   runApp(MyApp());
 }
 
-Future<List<ETFAlerts>> fetchAlerts() async {
-  final response = await get('http://62.171.165.127:4000/alerts?d=3');
+Future<List<ETFAlerts>> fetchAlerts(int days) async {
+  final response = await get('http://62.171.165.127:4000/alerts?d=$days');
   if (response.statusCode == 200) {
     List<ETFAlerts> e = new List();
     for (var jj in jsonDecode(response.body)) {
       e.add(ETFAlerts.fromJson(jj));
     }
-    // for (var jj in jsonDecode(response.body)) {
-    //   print(jj);
-    //   e.add(ETFAlerts.fromJson(jj));
-    // }
-    // print(e);
     return e;
   } else {
     throw Exception('Failed');
@@ -59,57 +54,104 @@ class SecondScreen extends StatelessWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void _incrementCounter() {
-    // newNotf("Increment", "this bitch");
-  }
+  int days = 1;
 
   Future<List<ETFAlerts>> futureAlerts;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   @override
   void initState() {
+    controller = new TextEditingController();
     super.initState();
-    futureAlerts = fetchAlerts();
+    futureAlerts = fetchAlerts(days);
   }
+
+  TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        leading: Icon(Icons.settings),
-      ),
-      body: Center(
-          child: FutureBuilder<List<ETFAlerts>>(
-        future: futureAlerts,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (context, i) {
-                return ListTile(
-                  leading: Text(snapshot.data[i].alerts.length.toString()),
-                  title: Text(snapshot.data[i].name),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AlertsScreen(etfAlerts: snapshot.data[i]),
-                        ));
-                  },
-                );
+          title: Text(widget.title),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                showDialog(
+                    child: new Dialog(
+                      child: new Column(
+                        children: <Widget>[
+                          new TextField(
+                            keyboardType: TextInputType.number,
+                            decoration:
+                                new InputDecoration(hintText: "Update Info"),
+                            controller: controller,
+                          ),
+                          new FlatButton(
+                            child: new Text("Save"),
+                            onPressed: () {
+                              setState(() {
+                                days = int.parse(controller.text);
+                                futureAlerts = fetchAlerts(days);
+                                // this._text = _c.text;
+                              });
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    context: context);
               },
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return CircularProgressIndicator();
-        },
-      )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+            ),
+          ],
+          leading: Center(
+            child: Text(
+              days.toString(),
+              style: TextStyle(fontSize: 20.0),
+            ),
+          )),
+      body: Center(
+        child: FutureBuilder<List<ETFAlerts>>(
+          future: futureAlerts,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, i) {
+                  return ListTile(
+                    leading: Text(snapshot.data[i].alerts.length.toString()),
+                    title: Text(snapshot.data[i].name),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        child: new Dialog(
+                          child: new Center(
+                            child: ListView.builder(
+                              itemCount: snapshot.data[i].alerts.length,
+                              itemBuilder: (context, j) {
+                                return ListTile(
+                                  title: Text(snapshot.data[i].alerts[j].tk),
+                                  leading:
+                                      Text(snapshot.data[i].alerts[j].date),
+                                  subtitle: Text(snapshot
+                                      .data[i].alerts[j].diff2mv
+                                      .toString()),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            return CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }

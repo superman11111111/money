@@ -60,3 +60,6 @@ Endpoints:
 
 ### S4: Build small app to access (flutter)
 
+Not pretty but works
+
+
