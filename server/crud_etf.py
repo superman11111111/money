@@ -22,7 +22,6 @@ if sel == 0:
                 new_etf[key] = (input(f'{info[key]["desc"]} ({default}): ') or default)
             else:
                 new_etf[key] = input(f'{info[key]["desc"]}: ')
-            new_etf[key] = '_'.join(new_etf[key].split(' '))
         elif info[key]['format'] == 'dict':
             if default:
                 pass
