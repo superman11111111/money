@@ -1,17 +1,37 @@
 import os
 import json
 import etf 
+from settings import *
 
 etfs = json.loads(open('etfs.json', 'r').read())
 
 
 sel = int(input('(0) ADD\n(1) EDIT\n(0-1): '))
 if sel == 0:
-    name = input('Name: ')
-    link = input('Link: ')
-    columns = input('Columns (col1, col2, ...): ').split(', ')
-    date_pos = [int(x) for x in input('Date pos (pos1, pos2): ').split(', ')]
-    etfs.append({'name': name, 'link': link, 'cols': columns, 'date_pos': date_pos})
+    new_etf = {}
+    info = json.loads(open(REQUIRED_INFO, 'r').read())
+    for key in info:
+        default = info[key]['default']
+        if info[key]['format'] == 'list':
+            if default: 
+                new_etf[key] = (input(f'{info[key]["desc"]} ({default}): ').split(', ') or default)
+            else:
+                new_etf[key] = input(f'{info[key]["desc"]}: ').split(', ')
+        elif info[key]['format'] == 'str':
+            if default:
+                new_etf[key] = (input(f'{info[key]["desc"]} ({default}): ') or default)
+            else:
+                new_etf[key] = input(f'{info[key]["desc"]}: ')
+            new_etf[key] = '_'.join(new_etf[key].split(' '))
+        elif info[key]['format'] == 'dict':
+            if default:
+                pass
+            print(f'{info[key]["desc"]}')
+            dd = {}
+            for kk in info[key]['keys']:
+                dd[kk] = input(f'{kk}: ')
+            new_etf[key] = dd
+    etfs.append(new_etf)
 elif sel == 1:
     print('Choose ETF')
     print('(0) All')

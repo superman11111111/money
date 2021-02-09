@@ -90,7 +90,7 @@
         "csv_formatter": ""
     },
     {
-        "name": "Cannabis ETF POSX",
+        "name": "Cannabis_ETF_POSX",
         "link": "https://www.globalxetfs.com/funds/potx/?download_full_holdings=true",
         "cols": {
             "ticker": "Ticker",
@@ -106,5 +106,23 @@
         "delimiter": ",",
         "decimal": ".",
         "csv_formatter": "REMOVE ROW 0,1"
+    },
+    {
+        "name": "ETFMG_Alternative_Harvest",
+        "link": "https://etfmg.com/holdings/MJ_fund_holdings.csv?=1612891556",
+        "cols": {
+            "ticker": "Ticker Symbol",
+            "shares": "Shares/Par",
+            "market_value": "Market Value Base",
+            "weight": "% of Net Assets"
+        },
+        "dtformat": "%m/%d/%Y",
+        "date_pos": [
+            "306",
+            "316"
+        ],
+        "delimiter": ",",
+        "decimal": ".",
+        "csv_formatter": ""
     }
 ]

@@ -48,10 +48,12 @@ class MyETF:
 
     def download(self, force=False):
         self.mkdir()
-        ct = rq.get(self.link).content
-        # Get date from csv
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        ct = rq.get(self.link, headers=headers).content
+
         self.date_pos = [int(x) for x in self.date_pos]
-        date = dt.strptime(ct[self.date_pos[0]:self.date_pos[1]].decode('utf-8').split(',')[0], self.dtformat)
+        dstring = ct[self.date_pos[0]:self.date_pos[1]].decode('utf-8').split(',')[0]
+        date = dt.strptime(dstring, self.dtformat)
         latest = self.dates()
         if latest:
             diff = (date - latest[-1]).days

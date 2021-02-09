@@ -1,0 +1,43 @@
+{
+    "name": {
+        "desc": "Name of the ETF",
+        "default": "",
+        "format": "str"
+    },
+    "link": {
+        "desc": "Link to daily Holdings",
+        "default": "",
+        "format": "str"
+    },
+    "cols": {
+        "desc": "Map to normalize columns",
+        "default": "",
+        "format": "dict",
+        "keys": ["ticker", "shares", "market_value", "weight"]
+    },
+    "dtformat": {
+        "desc": "Date time format in CSV",
+        "default": "%m/%d/%Y",
+        "format": "str"
+    },
+    "date_pos": {
+        "desc": "Date position in CSV",
+        "default": "",
+        "format": "list"
+    },
+    "delimiter": {
+        "desc": "CSV Delimiter",
+        "default": ",",
+        "format": "str"
+    },
+    "decimal": {
+        "desc": "Decimal Delimiter",
+        "default": ".",
+        "format": "str"
+    },
+    "csv_formatter": {
+        "desc": "CSV formatting commands",
+        "default": "",
+        "format": "str"
+    }
+}
