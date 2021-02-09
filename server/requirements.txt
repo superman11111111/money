@@ -1,4 +1,5 @@
 Flask
+babel
 pandas
 requests
 waitress
