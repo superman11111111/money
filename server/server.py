@@ -77,11 +77,14 @@ def info():
 
 
 if __name__ == '__main__':
+    print('[SERVER]: INITIALIZATION')
     for etf in etfs:
         etf.mkdir()
+        etf.calc()
     print(etfs)
     t = threading.Thread(target=_observe)
     t.start()
+    print('[SERVER]: READY')
     from waitress import serve
     serve(app, listen=f'{HOST}:{PORT}')
 
