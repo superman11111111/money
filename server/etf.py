@@ -96,7 +96,6 @@ class MyETF:
             for col in self.cols:
                 replace_columns[self.cols[col]] = col
             tmp = tmp.rename(columns=replace_columns)
-            print(tmp)
             for j in range(len(tmp['ticker'])):
                 tmptk = tmp['ticker'].iloc[j]
                 if pd.isnull(tmptk):
