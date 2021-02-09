@@ -41,10 +41,20 @@ def alerts():
         d = 2
     else:
         d = int(d)
+    b = request.args.get('b')
+    if not b:
+        b = .001
+    else:
+        b = float(b)
     r = []
     for etf in etfs:
         a = []
         alerts = etf.get_alerts(1)
+        alerts_copy = []
+        for al in alerts:
+            if abs(al[1]['diff2mv'][0]) >= b:
+                alerts_copy.append(al)
+        alerts = alerts_copy
         for tk, alert in alerts:
             if (dt.now() - dt.strptime(alert['date'][0], DTFORMAT)).days < d:
                 a.append({'tk': tk, 'date': alert['date'][0], 'diff2mv': alert['diff2mv'][0]})
@@ -53,7 +63,7 @@ def alerts():
     return jsonify(r)
 
 def _observe():
-    time.sleep(5)
+    time.sleep(3)
     while 1:
         print(f'[{dt.now()}]')
         for etf in etfs:

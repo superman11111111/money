@@ -159,9 +159,9 @@ class MyETF:
             return 0
         return alerts 
 
-def from_json(json):
-    return MyETF(json['name'], json['link'], json['cols'], json['date_pos'], json['dtformat'], json['delimiter'], json['decimal'], json['csv_formatter'])
-
 def from_save(json):
-    return MyETF(json['name'], json['link'], json['cols'], json['dfs'])
+    return MyETF(json['name'], json['link'], json['cols'], json['date_pos'], json['dtformat'], json['delimiter'], json['decimal'], json['csv_format'], json['dfs'])
+
+def from_json(json):
+    return MyETF(json['name'], json['link'], json['cols'], json['date_pos'], json['dtformat'], json['delimiter'], json['decimal'], json['csv_format'])
 
