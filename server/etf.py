@@ -153,7 +153,6 @@ class MyETF:
             df['date'] = df['date'].dt.strftime(DTFORMAT)
             df.index = list(range(len(df)))
             self.dfs[tk] = df.to_dict(orient='list')
-        self.print('calculated')
         self.save()
     
     def get_alerts(self, n=5):
@@ -164,11 +163,22 @@ class MyETF:
                 lastn = df[-n:]
                 lastn = lastn.loc[lastn['diff2mv'] != 0]
                 lastn = lastn.loc[lastn['diff2mv'].notna()]
-                if not lastn.empty:
-                    alerts.append([tk, lastn.to_dict(orient='list')])
+                if lastn.empty:
+                    continue
+                lastn = lastn.fillna('')
+                dd = lastn.to_dict(orient='list')
+                alerts.append((tk, dd))
         except:
             return 0
-        return alerts 
+        r_alerts = []
+        for tk, collection in alerts:
+            for i in range(len(collection['date'])):
+                tmp_alert = {}
+                for k in collection:
+                    tmp_alert[k] = collection[k][i]
+                tmp_alert['ticker'] = tk
+                r_alerts.append(tmp_alert)
+        return r_alerts 
 
 def from_save(json):
     return MyETF(json['name'], json['link'], json['cols'], json['date_pos'], json['dtformat'], json['delimiter'], json['decimal'], json['csv_format'], json['dfs'])

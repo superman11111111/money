@@ -1,5 +1,6 @@
 import json
 import etf
+from settings import *
 
 etfs = json.loads(open('etfs.json', 'r').read())
 
@@ -22,6 +23,9 @@ def main():
 def test(myetf):
     myetf.download()
     myetf.calc()
+    alerts = myetf.get_alerts(5)
+
+    print(alerts)
 
 if __name__ == '__main__':
     main()

@@ -36,6 +36,7 @@ def dl():
 
 @app.route('/alerts')
 def alerts():
+    print('alerts')
     d = request.args.get('d')
     if not d:
         d = 2
@@ -49,21 +50,18 @@ def alerts():
     r = []
     for etf in etfs:
         a = []
-        alerts = etf.get_alerts(1)
-        alerts_copy = []
-        for al in alerts:
-            if abs(al[1]['diff2mv'][0]) >= b:
-                alerts_copy.append(al)
-        alerts = alerts_copy
-        for tk, alert in alerts:
-            if (dt.now() - dt.strptime(alert['date'][0], DTFORMAT)).days < d:
-                a.append({'tk': tk, 'date': alert['date'][0], 'diff2mv': alert['diff2mv'][0]})
-        a = sorted(a, key=lambda k: k['diff2mv']) 
-        r.append({'name': etf.name, 'alerts': a})
+        alerts = etf.get_alerts(d)
+        alerts = [alert for alert in alerts if (dt.now()-dt.strptime(alert['date'], DTFORMAT)).days<d]
+        alerts = [alert for alert in alerts if abs(alert['diff2mv'])>b]
+        alerts.sort(key=lambda k: k['diff2mv'])
+        r.append({'etf': etf.name, 'alerts': alerts})
     return jsonify(r)
 
 def _observe():
     time.sleep(3)
+    for etf in etfs:
+        etf.mkdir()
+        etf.calc()
     while 1:
         print(f'[{dt.now()}]')
         for etf in etfs:
@@ -88,15 +86,13 @@ def info():
 
 if __name__ == '__main__':
     print('[SERVER]: INITIALIZATION')
-    for etf in etfs:
-        etf.mkdir()
-        etf.calc()
-    print(etfs)
     t = threading.Thread(target=_observe)
     t.start()
-    print('[SERVER]: READY')
-    from waitress import serve
-    serve(app, listen=f'{HOST}:{PORT}')
+    if DEBUG:
+        app.run(host=HOST, port=PORT)
+    else:
+        from waitress import serve
+        serve(app, listen=f'{HOST}:{PORT}')
 
 
 

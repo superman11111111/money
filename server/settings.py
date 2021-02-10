@@ -1,6 +1,6 @@
 HOST='0.0.0.0'
 PORT=4000
-DEBUG=False
+DEBUG=True
 CSV_DIR='csv'
 TMP_DIR='tmp'
 DTFORMAT='%m%d%y'

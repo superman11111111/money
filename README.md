@@ -8,7 +8,7 @@ Get ARK ETF Portfolio, record changes, serve their biggest investments as API, a
 
 * This cost me a whole day: https://stackoverflow.com/questions/1132941/least-astonishment-and-the-mutable-default-argument
 
-* Fix adding a new date gives different lengths in calc()
+* Fix when loading tmp/ some portfolios are getting added multiple times to self.dfs
 
 
 ### Step 1 (S1): Get Portfolio
@@ -56,6 +56,9 @@ Endpoints:
 
 /alerts : Get alerts of last day
 
+args: 
+- d = number of days to go back (int) (default=2)
+- b = Share change to marketcap border (float) (default=0.01)
 
 
 ### S4: Build small app to access (flutter)
