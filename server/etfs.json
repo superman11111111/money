@@ -101,10 +101,10 @@
         "dtformat": "%m/%d/%Y",
         "date_pos": [
             "54",
-            "64"
+            "66"
         ],
         "delimiter": ",",
-        "decimal": ".",
+        "decimal": ",",
         "csv_format": "REMOVE ROW 0,1"
     },
     {
@@ -119,10 +119,10 @@
         "dtformat": "%m/%d/%Y",
         "date_pos": [
             "306",
-            "316"
+            "318"
         ],
         "delimiter": ",",
-        "decimal": ".",
+        "decimal": ",",
         "csv_format": ""
     },
     {
@@ -137,10 +137,10 @@
         "dtformat": "%m/%d/%Y",
         "date_pos": [
             "23",
-            "33"
+            "35"
         ],
         "delimiter": ",",
-        "decimal": ".",
+        "decimal": ",",
         "csv_format": "REMOVE ROW 0"
     },
     {
@@ -155,10 +155,10 @@
         "dtformat": "%m/%d/%Y %I:%M:%S %p",
         "date_pos": [
             "176",
-            "196"
+            "198"
         ],
         "delimiter": ",",
-        "decimal": ".",
+        "decimal": ",",
         "csv_format": "REMOVE ROW 0,1,2,3,4"
     }
 ]

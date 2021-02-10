@@ -8,7 +8,7 @@ from util import mkdir
 import csv_formatter
 import csv
 import pandas as pd
-import math
+import numpy as np
 
 
 class MyETF:
@@ -52,7 +52,7 @@ class MyETF:
         ct = rq.get(self.link, headers=headers).content
 
         self.date_pos = [int(x) for x in self.date_pos]
-        dstring = ct[self.date_pos[0]:self.date_pos[1]].decode('utf-8').split(',')[0]
+        dstring = ct[self.date_pos[0]:self.date_pos[1]].decode('utf-8').split(self.delimiter)[0].replace('"','')
         date = dt.strptime(dstring, self.dtformat)
         latest = self.dates()
         if latest:
@@ -132,12 +132,23 @@ class MyETF:
             df['date'] = pd.to_datetime(df['date'])
             df.index = df['date']
             df.sort_index(inplace=True)
+            df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+            try:
+                df['shares'] = df['shares'].astype('float').astype('int')
+            except ValueError:
+                try:
+                    df['shares'] = df['shares'].str.replace(',','').astype('float').astype('int')
+                except ValueError as e:
+                    continue
             df['diff'] = df['shares'].diff()
             df['diff'] = df['diff'].astype('float')
             try:
                 df['market_value'] = df['market_value'].astype('float')
-            except ValueError as e:
-                df['market_value'] = [x.replace(',','') for x in df['market_value']]
+            except ValueError:
+                try:
+                    df['market_value'] = df['market_value'].str.replace(',','').astype('float')
+                except ValueError:
+                    df['market_value'] = np.nan
             df['diff2mv'] = df['diff']/df['market_value']
             df['date'] = df['date'].dt.strftime(DTFORMAT)
             df.index = list(range(len(df)))

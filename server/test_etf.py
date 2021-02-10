@@ -21,6 +21,7 @@ def main():
 
 def test(myetf):
     myetf.download()
+    myetf.calc()
 
 if __name__ == '__main__':
     main()
